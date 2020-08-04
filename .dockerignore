@@ -1,0 +1,10 @@
+# JS stuff
+node_modules
+
+# Dev stuff
+.git
+.gitignore
+.vscode
+
+# Other stuff
+README.md
