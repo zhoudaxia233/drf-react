@@ -29,43 +29,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const createData = (id, campaign_title, status, creation_date, created_by) => {
-  return { id, campaign_title, status, creation_date, created_by };
-};
-
-const rows = [
-  createData(1, 'Mustertitel', 'geplant', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(2, 'Mustertitel', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(3, 'Mustertitel', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(4, 'Mustertitel', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(5, 'Mustertitel', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(6, 'Mustertitel', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(7, 'Mustertitel', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(8, 'Mustertitel', 'in Bearbeitung', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(9, 'Mustertitel', 'abgelaufen', '10.05.2019 - 15:21', 'Max Mustermann'),
-  createData(10, 'Mustertitel', 'abgelaufen', '10.05.2019 - 15:21', 'Max Mustermann'),
-  createData(11, 'Mustertitel2', 'geplant', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(12, 'Mustertitel2', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(13, 'Mustertitel2', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(14, 'Mustertitel2', 'abgelaufen', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(15, 'Mustertitel2', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(16, 'Mustertitel2', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(17, 'Mustertitel2', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(18, 'Mustertitel2', 'in Bearbeitung', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(19, 'Mustertitel2', 'abgelaufen', '10.05.2019 - 15:21', 'Max Mustermann'),
-  createData(20, 'Mustertitel2', 'abgelaufen', '10.05.2019 - 15:21', 'Max Mustermann'),
-  createData(21, 'Mustertitel3', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(22, 'Mustertitel3', 'laufend', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(23, 'Mustertitel3', 'in Bearbeitung', '10.05.2020 - 15:21', 'Max Mustermann'),
-  createData(24, 'Mustertitel3', 'abgelaufen', '10.05.2019 - 15:21', 'Max Mustermann'),
-  createData(25, 'Mustertitel3', 'abgelaufen', '10.05.2019 - 15:21', 'Max Mustermann'),
-];
-
 const SimpleTable = props => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
   const rowsPerPage = props.rowsPerPage;
   const theme = useTheme();
+  const rows = props.tableContent;
 
   const onPageChange = (_, page) => {
     setPage(page);
@@ -90,21 +59,21 @@ const SimpleTable = props => {
           ).map(row => (
             <TableRow key={row.id} className={classes.cursorHoverTable} hover>
               <TableCell component="th" scope="row">
-                <Typography color="textSecondary">{row.campaign_title}</Typography>
+                <Typography color="textSecondary">{row.title}</Typography>
               </TableCell>
               <TableCell>
                 {(() => {
                   let iconColor, txtColor;
                   switch (row.status) {
-                    case 'geplant':
+                    case 'PL':
                       iconColor = { color: theme.palette.primary.main };
                       txtColor = 'primary';
                       break;
-                    case 'laufend':
+                    case 'RN':
                       iconColor = { color: theme.palette.secondary.main };
                       txtColor = 'secondary';
                       break;
-                    case 'abgelaufen':
+                    case 'FIN':
                       iconColor = { color: theme.palette.error.main };
                       txtColor = 'error';
                       break;
@@ -118,7 +87,20 @@ const SimpleTable = props => {
                         <FiberManualRecordIcon style={iconColor} fontSize="small" />
                       </Grid>
                       <Grid item container xs={10} alignItems="center">
-                        <Typography color={txtColor}>{row.status}</Typography>
+                        <Typography color={txtColor}>
+                          {(() => {
+                            switch (row.status) {
+                              case 'PL':
+                                return 'geplant';
+                              case 'RN':
+                                return 'laufend';
+                              case 'IP':
+                                return 'in Bearbeitung';
+                              default:
+                                return 'abgelaufen';
+                            }
+                          })()}
+                        </Typography>
                       </Grid>
                     </Grid>
                   );
@@ -128,12 +110,12 @@ const SimpleTable = props => {
                 <Typography color="textSecondary">{row.creation_date}</Typography>
               </TableCell>
               <TableCell>
-                <Typography color="textSecondary">{row.created_by}</Typography>
+                <Typography color="textSecondary">{row.creator}</Typography>
               </TableCell>
               <TableCell>
                 {(() => {
                   switch (row.status) {
-                    case 'laufend':
+                    case 'RN':
                       return (
                         <React.Fragment>
                           <IconButton aria-label="edit">
@@ -144,7 +126,7 @@ const SimpleTable = props => {
                           </IconButton>
                         </React.Fragment>
                       );
-                    case 'abgelaufen':
+                    case 'FIN':
                       return (
                         <IconButton aria-label="edit">
                           <CreateIcon />
